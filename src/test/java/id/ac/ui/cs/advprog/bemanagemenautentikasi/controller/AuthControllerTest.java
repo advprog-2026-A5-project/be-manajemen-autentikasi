@@ -133,4 +133,93 @@ public class AuthControllerTest {
         
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void testRegisterUser_UsernameAlreadyExists() {
+        // GIVEN: Username sudah terdaftar
+        when(userRepository.existsByUsername(validUser.getUsername())).thenReturn(true);
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(validUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Username is already in use!", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testRegisterUser_MandorMissingSertifikasi() {
+        // GIVEN: Mendaftar sebagai MANDOR tapi sertifikasi kosong
+        User mandorUser = new User();
+        mandorUser.setUsername("budi_mandor");
+        mandorUser.setEmail("budi_mandor@mysawit.com");
+        mandorUser.setNama("Budi Mandor");
+        mandorUser.setPassword("password123");
+        mandorUser.setRole("MANDOR");
+        mandorUser.setNomorSertifikasiMandor(""); // Kosong
+
+        when(userRepository.existsByUsername("budi_mandor")).thenReturn(false);
+        when(userRepository.existsByEmail("budi_mandor@mysawit.com")).thenReturn(false);
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(mandorUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Nomor Sertifikasi Mandor wajib diisi!", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
+    @Test
+    void testRegisterUser_ForbidAdminRegistration() {
+        // GIVEN: Ada orang mencoba mendaftar sebagai ADMIN
+        validUser.setRole("ADMIN");
+        when(userRepository.existsByUsername(validUser.getUsername())).thenReturn(false);
+        when(userRepository.existsByEmail(validUser.getEmail())).thenReturn(false);
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(validUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Role is not valid! Registrasi ADMIN tidak diizinkan.", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testSignoutUser() {
+        // WHEN
+        ResponseEntity<?> response = authController.logoutUser();
+
+        // THEN
+        assertEquals(200, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Log out berhasil!", body.get("message"));
+    }
+
+    @Test
+    void testRegisterUser_MissingMinimalData() {
+        // GIVEN: User tanpa password dan nama
+        User invalidUser = new User();
+        invalidUser.setEmail("anonim@mysawit.com");
+        invalidUser.setRole("BURUH");
+        // nama dan password sengaja tidak di-set (null)
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(invalidUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Nama, Email, dan Password wajib diisi!", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
 }

@@ -6,6 +6,7 @@ plugins {
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.github.spotbugs") version "6.4.8"
+    id("org.sonarqube") version "5.1.0.4882"
 }
 
 group = "id.ac.ui.cs.advprog"
@@ -46,6 +47,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("com.google.api-client:google-api-client:2.9.0")
+
 }
 
 tasks.withType<Test> {
@@ -67,4 +70,13 @@ tasks.test {
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports.xml.required.set(true)
+}
+
+sonar {
+    properties {
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "")
+        property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory.get().asFile}/reports/jacoco/test/jacocoTestReport.xml")
+    }
 }

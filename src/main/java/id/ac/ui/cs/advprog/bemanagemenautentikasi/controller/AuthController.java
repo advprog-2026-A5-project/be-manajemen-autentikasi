@@ -43,21 +43,43 @@ public class AuthController {
     
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
+        // Validasi Kelengkapan Minimal Data
+        if (user.getNama() == null || user.getNama().trim().isEmpty() ||
+            user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+            user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Nama, Email, dan Password wajib diisi!"));
+        }
+
+        // Validasi Duplikasi Username
+        String usernameToRegister = user.getUsername() != null ? user.getUsername() : user.getEmail();
+        if (userRepository.existsByUsername(usernameToRegister)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Username is already in use!"));
+        }
+
         // Validasi Duplikasi Email
         if (userRepository.existsByEmail(user.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Email is already in use!"));
         }
         
-        // Validasi Role
+        // Validasi Role (Tolak ADMIN, hanya boleh BURUH, MANDOR, SUPIR)
         String role = user.getRole();
-        if (role == null || !(role.equals("ADMIN") || role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
+        if ("ADMIN".equals(role)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid! Registrasi ADMIN tidak diizinkan."));
+        }
+        if (role == null || !(role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid!"));
+        }
+
+        // Validasi Khusus Mandor: Nomor Sertifikasi Mandor wajib diisi
+        if ("MANDOR".equalsIgnoreCase(role)) {
+            if (user.getNomorSertifikasiMandor() == null || user.getNomorSertifikasiMandor().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Error: Nomor Sertifikasi Mandor wajib diisi!"));
+            }
         }
 
         // Create new user's account
         User newUser = new User();
-        // Menggunakan email sebagai username fallback jika klien tidak mengirimkan username 
-        newUser.setUsername(user.getUsername() != null ? user.getUsername() : user.getEmail());
+        newUser.setUsername(usernameToRegister);
         newUser.setEmail(user.getEmail());
         newUser.setNama(user.getNama());
         newUser.setPassword(encoder.encode(user.getPassword()));
@@ -70,5 +92,12 @@ public class AuthController {
         userRepository.save(newUser);
 
         return ResponseEntity.ok(Map.of("message", "User registered successfully!"));
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> logoutUser() {
+        // Karena sistem ini menggunakan Stateless JWT, session dihancurkan di sisi frontend (menghapus token).
+        // Endpoint ini disediakan murni sebagai respons HTTP 200 OK standar bagi frontend untuk merespons klik tombol "Logout".
+        return ResponseEntity.ok(Map.of("message", "Log out berhasil!"));
     }
 }

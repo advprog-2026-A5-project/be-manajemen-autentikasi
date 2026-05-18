@@ -110,4 +110,110 @@ public class UserServiceImplTest {
         // Memastikan save tidak pernah dipanggil karena gagal validasi
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void testUpdateUser_Success() {
+        // GIVEN
+        User updateData = new User();
+        updateData.setNama("Agus Updated");
+        updateData.setEmail("agus.new@mysawit.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+        when(userRepository.existsByEmail("agus.new@mysawit.com")).thenReturn(false);
+
+        // WHEN
+        userService.updateUser(1L, updateData);
+
+        // THEN
+        assertEquals("Agus Updated", buruh.getNama());
+        assertEquals("agus.new@mysawit.com", buruh.getEmail());
+        verify(userRepository, times(1)).save(buruh);
+    }
+
+    @Test
+    void testUpdateUser_EmailAlreadyExists() {
+        // GIVEN
+        User updateData = new User();
+        updateData.setEmail("budi@mysawit.com"); // Email milik mandor
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+        // Mensimulasikan email sudah terpakai oleh user ID lain
+        when(userRepository.existsByEmail("budi@mysawit.com")).thenReturn(true);
+
+        // WHEN & THEN
+        Exception exception = assertThrows(RuntimeException.class, () -> userService.updateUser(1L, updateData));
+        assertEquals("Email sudah digunakan oleh pengguna lain!", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testUnassignBuruhFromMandor_Success() {
+        // GIVEN: Buruh sudah memiliki mandor
+        buruh.setMandor(mandor);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        // WHEN
+        userService.unassignBuruhFromMandor(1L);
+
+        // THEN: Mandor diset null dan disave
+        assertNull(buruh.getMandor());
+        verify(userRepository, times(1)).save(buruh);
+    }
+
+    @Test
+    void testUnassignBuruhFromMandor_ThrowsException_IfUserNotBuruh() {
+        // GIVEN: Target bukan buruh tapi Mandor
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
+
+        // WHEN & THEN
+        Exception exception = assertThrows(RuntimeException.class, () -> userService.unassignBuruhFromMandor(2L));
+        assertEquals("User yang dicopot harus ber-role BURUH!", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testDeleteUser_Success() {
+        // GIVEN
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        // WHEN
+        userService.deleteUser(1L);
+
+        // THEN
+        verify(userRepository, times(1)).delete(buruh);
+    }
+
+    @Test
+    void testAssignBuruhToMandor_ThrowsException_IfBuruhNotRoleBuruh() {
+        // GIVEN: Target buruh ternyata memiliki role SUPIR
+        User bukanBuruh = new User();
+        bukanBuruh.setId(4L);
+        bukanBuruh.setRole("SUPIR");
+
+        when(userRepository.findById(4L)).thenReturn(Optional.of(bukanBuruh));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
+
+        // WHEN & THEN
+        Exception exception = assertThrows(RuntimeException.class, () -> userService.assignBuruhToMandor(4L, 2L));
+        assertEquals("User yang di-assign harus ber-role BURUH!", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testUpdateUser_WithRoleAndSertifikasiMandor() {
+        // GIVEN
+        User updateData = new User();
+        updateData.setRole("MANDOR");
+        updateData.setNomorSertifikasiMandor("MANDOR-999");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        // WHEN
+        userService.updateUser(1L, updateData);
+
+        // THEN
+        assertEquals("MANDOR", buruh.getRole());
+        assertEquals("MANDOR-999", buruh.getNomorSertifikasiMandor());
+        verify(userRepository, times(1)).save(buruh);
+    }
 }

@@ -45,6 +45,18 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Buruh berhasil ditugaskan ke Mandor!"));
     }
 
+    // Unassign Buruh dari Mandor
+    @PostMapping("/{buruhId}/unassign-mandor")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> unassignBuruhFromMandor(@PathVariable Long buruhId) {
+        try {
+            userService.unassignBuruhFromMandor(buruhId);
+            return ResponseEntity.ok(Map.of("message", "Mandor berhasil dicopot dari Buruh!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
     // Hapus pengguna
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -58,5 +70,17 @@ public class UserController {
 
         userService.deleteUser(id);
         return ResponseEntity.ok(Map.of("message", "User berhasil dihapus!"));
+    }
+
+    // Update profil pengguna
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updateData) {
+        try {
+            userService.updateUser(id, updateData);
+            return ResponseEntity.ok(Map.of("message", "User berhasil diperbarui!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 }
