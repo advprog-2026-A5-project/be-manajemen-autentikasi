@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.bemanagemenautentikasi.controller;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.repository.UserRepository;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.security.JwtUtil;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,6 +75,7 @@ public class AuthControllerTest {
         // THEN
         assertEquals(200, response.getStatusCode().value());
         Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
         assertEquals("dummy-jwt-token", body.get("token"));
         
         // Memastikan authentication manager dipanggil dengan EMAIL, bukan Username
@@ -107,6 +109,7 @@ public class AuthControllerTest {
         // THEN
         assertEquals(400, response.getStatusCode().value());
         Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
         assertEquals("Error: Email is already in use!", body.get("message"));
         
         // Memastikan tidak ada user yang di-save
@@ -125,6 +128,7 @@ public class AuthControllerTest {
         // THEN
         assertEquals(400, response.getStatusCode().value());
         Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
         assertEquals("Error: Role is not valid!", body.get("message"));
         
         verify(userRepository, never()).save(any(User.class));

@@ -53,7 +53,7 @@ public class UserServiceImplTest {
 
         // THEN
         assertEquals(1, result.size());
-        assertEquals("Agus Buruh", result.get(0).getNama());
+        assertEquals("Agus Buruh", result.getFirst().getNama());
     }
 
     @Test
