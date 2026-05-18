@@ -145,4 +145,29 @@ public class UserServiceImplTest {
         assertEquals("Email sudah digunakan oleh pengguna lain!", exception.getMessage());
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void testUnassignBuruhFromMandor_Success() {
+        // GIVEN: Buruh sudah memiliki mandor
+        buruh.setMandor(mandor);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        // WHEN
+        userService.unassignBuruhFromMandor(1L);
+
+        // THEN: Mandor diset null dan disave
+        assertNull(buruh.getMandor());
+        verify(userRepository, times(1)).save(buruh);
+    }
+
+    @Test
+    void testUnassignBuruhFromMandor_ThrowsException_IfUserNotBuruh() {
+        // GIVEN: Target bukan buruh tapi Mandor
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
+
+        // WHEN & THEN
+        Exception exception = assertThrows(RuntimeException.class, () -> userService.unassignBuruhFromMandor(2L));
+        assertEquals("User yang dicopot harus ber-role BURUH!", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
 }
