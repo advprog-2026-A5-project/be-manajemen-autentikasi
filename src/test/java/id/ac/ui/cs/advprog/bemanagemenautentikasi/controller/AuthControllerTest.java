@@ -174,4 +174,33 @@ public class AuthControllerTest {
         assertEquals("Error: Nomor Sertifikasi Mandor wajib diisi!", body.get("message"));
         verify(userRepository, never()).save(any(User.class));
     }
+    @Test
+    void testRegisterUser_ForbidAdminRegistration() {
+        // GIVEN: Ada orang mencoba mendaftar sebagai ADMIN
+        validUser.setRole("ADMIN");
+        when(userRepository.existsByUsername(validUser.getUsername())).thenReturn(false);
+        when(userRepository.existsByEmail(validUser.getEmail())).thenReturn(false);
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(validUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Role is not valid! Registrasi ADMIN tidak diizinkan.", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testSignoutUser() {
+        // WHEN
+        ResponseEntity<?> response = authController.logoutUser();
+
+        // THEN
+        assertEquals(200, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Log out berhasil!", body.get("message"));
+    }
 }
