@@ -141,8 +141,8 @@ jobs:
 
   dummy-deploy:
     name: dummy-deploy
-    # Quality Gate: Require BOTH testing and static analysis to pass successfully
-    needs: [buildAndTest, backend-analysis]
+    # Quality Gate: Require testing, static analysis, and SonarCloud analysis to pass successfully
+    needs: [buildAndTest, backend-analysis, sonarcloud]
     if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
