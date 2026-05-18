@@ -48,6 +48,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void unassignBuruhFromMandor(Long buruhId) {
+        User buruh = getUserById(buruhId);
+
+        if (!"BURUH".equalsIgnoreCase(buruh.getRole())) {
+            throw new RuntimeException("User yang dicopot harus ber-role BURUH!");
+        }
+
+        buruh.setMandor(null);
+        userRepository.save(buruh);
+    }
+
+    @Override
     public void deleteUser(Long id) {
         User user = getUserById(id);
         userRepository.delete(user);
