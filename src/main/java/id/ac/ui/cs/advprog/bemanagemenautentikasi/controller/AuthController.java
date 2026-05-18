@@ -50,7 +50,7 @@ public class AuthController {
         
         // Validasi Role
         String role = user.getRole();
-        if (role == null || !(role.equals("ADMIN_UTAMA") || role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
+        if (role == null || !(role.equals("ADMIN") || role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid!"));
         }
 

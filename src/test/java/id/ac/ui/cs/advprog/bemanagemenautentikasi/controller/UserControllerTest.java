@@ -39,7 +39,7 @@ public class UserControllerTest {
         adminUser = new User();
         adminUser.setId(1L);
         adminUser.setEmail("admin@mysawit.com");
-        adminUser.setRole("ADMIN_UTAMA");
+        adminUser.setRole("ADMIN");
 
         buruhUser = new User();
         buruhUser.setId(2L);
