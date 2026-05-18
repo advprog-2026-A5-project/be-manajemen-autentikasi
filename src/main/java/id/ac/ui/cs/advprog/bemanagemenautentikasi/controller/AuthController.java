@@ -43,6 +43,13 @@ public class AuthController {
     
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
+        // Validasi Kelengkapan Minimal Data
+        if (user.getNama() == null || user.getNama().trim().isEmpty() ||
+            user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+            user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Nama, Email, dan Password wajib diisi!"));
+        }
+
         // Validasi Duplikasi Username
         String usernameToRegister = user.getUsername() != null ? user.getUsername() : user.getEmail();
         if (userRepository.existsByUsername(usernameToRegister)) {
