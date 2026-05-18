@@ -46,6 +46,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("com.google.api-client:google-api-client:2.9.0")
+
 }
 
 tasks.withType<Test> {
