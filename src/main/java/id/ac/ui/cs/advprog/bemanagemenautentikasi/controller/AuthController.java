@@ -45,11 +45,17 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Username is already taken!"));
         }
         // Create new user's account
-        User newUser = new User(
-                null,
-                user.getUsername(),
-                encoder.encode(user.getPassword())
-        );
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        newUser.setEmail(user.getEmail());
+        newUser.setNama(user.getNama());
+        newUser.setPassword(encoder.encode(user.getPassword()));
+        newUser.setRole(user.getRole());
+        
+        // Cek jika Mandor, maka assign nomor sertifikasinya juga
+        if ("MANDOR".equalsIgnoreCase(user.getRole())) {
+            newUser.setNomorSertifikasiMandor(user.getNomorSertifikasiMandor());
+        }
         userRepository.save(newUser);
 
         return ResponseEntity.ok(Map.of("message", "User registered successfully!"));
