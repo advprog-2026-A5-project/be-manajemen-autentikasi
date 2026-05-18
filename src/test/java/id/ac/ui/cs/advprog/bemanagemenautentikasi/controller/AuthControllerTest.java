@@ -203,4 +203,23 @@ public class AuthControllerTest {
         Assertions.assertNotNull(body);
         assertEquals("Log out berhasil!", body.get("message"));
     }
+
+    @Test
+    void testRegisterUser_MissingMinimalData() {
+        // GIVEN: User tanpa password dan nama
+        User invalidUser = new User();
+        invalidUser.setEmail("anonim@mysawit.com");
+        invalidUser.setRole("BURUH");
+        // nama dan password sengaja tidak di-set (null)
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(invalidUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Nama, Email, dan Password wajib diisi!", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
 }
