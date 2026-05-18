@@ -1,11 +1,12 @@
-package id.ac.ui.cs.advprog.mysawit.configurations;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.configurations;
 
-import id.ac.ui.cs.advprog.mysawit.security.AuthEntryPointJwt;
-import id.ac.ui.cs.advprog.mysawit.security.AuthTokenFilter;
-import id.ac.ui.cs.advprog.mysawit.service.CustomUserDetailsService;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.security.AuthEntryPointJwt;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.security.AuthTokenFilter;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Updated configuration for Spring Security 6.x
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF
                 .cors((cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
                     corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:3000"));

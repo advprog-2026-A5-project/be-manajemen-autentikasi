@@ -1,8 +1,8 @@
-package id.ac.ui.cs.advprog.mysawit.controller;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.controller;
 
-import id.ac.ui.cs.advprog.mysawit.model.User;
-import id.ac.ui.cs.advprog.mysawit.repository.UserRepository;
-import id.ac.ui.cs.advprog.mysawit.security.JwtUtil;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.repository.UserRepository;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -28,9 +28,10 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
+        // Menggunakan Email untuk Autentikasi
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        user.getUsername(),
+                        user.getEmail(),
                         user.getPassword()
                 )
         );
@@ -39,17 +40,33 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of("token", jwt));
     }
+    
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Error: Username is already taken!"));
+        // Validasi Duplikasi Email
+        if (userRepository.existsByEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Email is already in use!"));
         }
+        
+        // Validasi Role
+        String role = user.getRole();
+        if (role == null || !(role.equals("ADMIN") || role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid!"));
+        }
+
         // Create new user's account
-        User newUser = new User(
-                null,
-                user.getUsername(),
-                encoder.encode(user.getPassword())
-        );
+        User newUser = new User();
+        // Menggunakan email sebagai username fallback jika klien tidak mengirimkan username 
+        newUser.setUsername(user.getUsername() != null ? user.getUsername() : user.getEmail());
+        newUser.setEmail(user.getEmail());
+        newUser.setNama(user.getNama());
+        newUser.setPassword(encoder.encode(user.getPassword()));
+        newUser.setRole(user.getRole());
+        
+        // Cek jika Mandor, maka assign nomor sertifikasinya juga
+        if ("MANDOR".equalsIgnoreCase(user.getRole())) {
+            newUser.setNomorSertifikasiMandor(user.getNomorSertifikasiMandor());
+        }
         userRepository.save(newUser);
 
         return ResponseEntity.ok(Map.of("message", "User registered successfully!"));
