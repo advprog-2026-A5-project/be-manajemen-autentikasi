@@ -170,4 +170,50 @@ public class UserServiceImplTest {
         assertEquals("User yang dicopot harus ber-role BURUH!", exception.getMessage());
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void testDeleteUser_Success() {
+        // GIVEN
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        // WHEN
+        userService.deleteUser(1L);
+
+        // THEN
+        verify(userRepository, times(1)).delete(buruh);
+    }
+
+    @Test
+    void testAssignBuruhToMandor_ThrowsException_IfBuruhNotRoleBuruh() {
+        // GIVEN: Target buruh ternyata memiliki role SUPIR
+        User bukanBuruh = new User();
+        bukanBuruh.setId(4L);
+        bukanBuruh.setRole("SUPIR");
+
+        when(userRepository.findById(4L)).thenReturn(Optional.of(bukanBuruh));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
+
+        // WHEN & THEN
+        Exception exception = assertThrows(RuntimeException.class, () -> userService.assignBuruhToMandor(4L, 2L));
+        assertEquals("User yang di-assign harus ber-role BURUH!", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testUpdateUser_WithRoleAndSertifikasiMandor() {
+        // GIVEN
+        User updateData = new User();
+        updateData.setRole("MANDOR");
+        updateData.setNomorSertifikasiMandor("MANDOR-999");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        // WHEN
+        userService.updateUser(1L, updateData);
+
+        // THEN
+        assertEquals("MANDOR", buruh.getRole());
+        assertEquals("MANDOR-999", buruh.getNomorSertifikasiMandor());
+        verify(userRepository, times(1)).save(buruh);
+    }
 }

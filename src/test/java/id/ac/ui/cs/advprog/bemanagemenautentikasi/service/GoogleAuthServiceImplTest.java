@@ -128,4 +128,13 @@ public class GoogleAuthServiceImplTest {
         );
         assertEquals("Invalid ID token.", exception.getMessage());
     }
+
+    @Test
+    void testVerifyToken_RealMethod_WithMalformedToken_ThrowsException() {
+        // Karena metode verifyToken() memanggil Google SDK yang mengurai Base64,
+        // menggunakan string sembarang akan memicu Exception (biasanya IllegalArgumentException dari SDK)
+        assertThrows(Exception.class, () -> 
+            googleAuthService.verifyToken("not-a-valid-jwt-token-string")
+        );
+    }
 }
