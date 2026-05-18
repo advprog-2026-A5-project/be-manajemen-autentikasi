@@ -8,6 +8,7 @@ public interface UserService {
     List<User> getFilteredUsers(String nama, String email, String role);
     User getUserById(Long id);
     void assignBuruhToMandor(Long buruhId, Long mandorId);
+    void unassignBuruhFromMandor(Long buruhId);
     void updateUser(Long id, User updateData);
     void deleteUser(Long id);
 }

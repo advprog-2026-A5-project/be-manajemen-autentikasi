@@ -43,6 +43,12 @@ public class AuthController {
     
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
+        // Validasi Duplikasi Username
+        String usernameToRegister = user.getUsername() != null ? user.getUsername() : user.getEmail();
+        if (userRepository.existsByUsername(usernameToRegister)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Username is already in use!"));
+        }
+
         // Validasi Duplikasi Email
         if (userRepository.existsByEmail(user.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Email is already in use!"));
@@ -54,10 +60,16 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid!"));
         }
 
+        // Validasi Khusus Mandor: Nomor Sertifikasi Mandor wajib diisi
+        if ("MANDOR".equalsIgnoreCase(role)) {
+            if (user.getNomorSertifikasiMandor() == null || user.getNomorSertifikasiMandor().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Error: Nomor Sertifikasi Mandor wajib diisi!"));
+            }
+        }
+
         // Create new user's account
         User newUser = new User();
-        // Menggunakan email sebagai username fallback jika klien tidak mengirimkan username 
-        newUser.setUsername(user.getUsername() != null ? user.getUsername() : user.getEmail());
+        newUser.setUsername(usernameToRegister);
         newUser.setEmail(user.getEmail());
         newUser.setNama(user.getNama());
         newUser.setPassword(encoder.encode(user.getPassword()));
