@@ -28,7 +28,7 @@ public class User {
     private String password;
     
     @Column(nullable = false)
-    private String role; // "ADMIN_UTAMA", "BURUH", "MANDOR", "SUPIR"
+    private String role; // "ADMIN", "BURUH", "MANDOR", "SUPIR"
     
     @Column(name = "nomor_sertifikasi_mandor")
     private String nomorSertifikasiMandor; // Hanya wajib diisi jika role MANDOR
