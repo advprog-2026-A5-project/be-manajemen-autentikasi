@@ -1,1 +1,1 @@
-rootProject.name = "MySawit"
+rootProject.name = "be-management-autentikasi"

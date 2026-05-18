@@ -1,0 +1,36 @@
+HELP.md
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local read-only reference code, do not commit
+/reference/
+
+### Java / Spring ###
+target/
+*.class
+
+### STS ###
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+### VS Code ###
+.vscode/
+
+### Node leftovers (if any) ###
+node_modules/
+
+### Secrets ###
+.env
