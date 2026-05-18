@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.bemanagemenautentikasi.controller;
 
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.service.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +63,8 @@ public class UserControllerTest {
         ResponseEntity<List<User>> response = userController.getAllUsers("budi", null, "BURUH");
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
         assertEquals(2, response.getBody().size());
         verify(userService, times(1)).getFilteredUsers("budi", null, "BURUH");
     }
@@ -76,7 +78,7 @@ public class UserControllerTest {
         ResponseEntity<?> response = userController.getUserById(2L);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals(buruhUser, response.getBody());
     }
 
@@ -89,8 +91,9 @@ public class UserControllerTest {
         ResponseEntity<?> response = userController.assignBuruhToMandor(2L, 3L);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
-        Map<String, String> body = (Map<String, String>) response.getBody();
+        assertEquals(200, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
         assertEquals("Buruh berhasil ditugaskan ke Mandor!", body.get("message"));
     }
 
@@ -105,7 +108,7 @@ public class UserControllerTest {
         ResponseEntity<?> response = userController.deleteUser(2L, authentication);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         verify(userService, times(1)).deleteUser(2L);
     }
 
@@ -119,8 +122,9 @@ public class UserControllerTest {
         ResponseEntity<?> response = userController.deleteUser(1L, authentication);
 
         // THEN
-        assertEquals(400, response.getStatusCodeValue());
-        Map<String, String> body = (Map<String, String>) response.getBody();
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
         assertEquals("Admin Utama tidak dapat menghapus dirinya sendiri!", body.get("message"));
         verify(userService, never()).deleteUser(1L);
     }

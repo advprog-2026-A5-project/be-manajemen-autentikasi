@@ -72,8 +72,8 @@ public class AuthControllerTest {
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
-        Map<String, String> body = (Map<String, String>) response.getBody();
+        assertEquals(200, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
         assertEquals("dummy-jwt-token", body.get("token"));
         
         // Memastikan authentication manager dipanggil dengan EMAIL, bukan Username
@@ -92,7 +92,7 @@ public class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(validUser);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         verify(userRepository, times(1)).save(any(User.class));
     }
 
@@ -105,8 +105,8 @@ public class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(validUser);
 
         // THEN
-        assertEquals(400, response.getStatusCodeValue());
-        Map<String, String> body = (Map<String, String>) response.getBody();
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
         assertEquals("Error: Email is already in use!", body.get("message"));
         
         // Memastikan tidak ada user yang di-save
@@ -123,8 +123,8 @@ public class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(validUser);
 
         // THEN
-        assertEquals(400, response.getStatusCodeValue());
-        Map<String, String> body = (Map<String, String>) response.getBody();
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
         assertEquals("Error: Role is not valid!", body.get("message"));
         
         verify(userRepository, never()).save(any(User.class));
