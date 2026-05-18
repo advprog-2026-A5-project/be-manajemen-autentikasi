@@ -54,9 +54,12 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Email is already in use!"));
         }
         
-        // Validasi Role
+        // Validasi Role (Tolak ADMIN, hanya boleh BURUH, MANDOR, SUPIR)
         String role = user.getRole();
-        if (role == null || !(role.equals("ADMIN") || role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
+        if ("ADMIN".equals(role)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid! Registrasi ADMIN tidak diizinkan."));
+        }
+        if (role == null || !(role.equals("BURUH") || role.equals("MANDOR") || role.equals("SUPIR"))) {
             return ResponseEntity.badRequest().body(Map.of("message", "Error: Role is not valid!"));
         }
 
@@ -82,5 +85,12 @@ public class AuthController {
         userRepository.save(newUser);
 
         return ResponseEntity.ok(Map.of("message", "User registered successfully!"));
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> logoutUser() {
+        // Karena sistem ini menggunakan Stateless JWT, session dihancurkan di sisi frontend (menghapus token).
+        // Endpoint ini disediakan murni sebagai respons HTTP 200 OK standar bagi frontend untuk merespons klik tombol "Logout".
+        return ResponseEntity.ok(Map.of("message", "Log out berhasil!"));
     }
 }
