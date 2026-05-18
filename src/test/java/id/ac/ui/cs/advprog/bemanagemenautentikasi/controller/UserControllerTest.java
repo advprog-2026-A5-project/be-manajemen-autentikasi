@@ -128,4 +128,22 @@ public class UserControllerTest {
         assertEquals("Admin Utama tidak dapat menghapus dirinya sendiri!", body.get("message"));
         verify(userService, never()).deleteUser(1L);
     }
+    @Test
+    void testUpdateUser_Success() {
+        // GIVEN
+        User updateData = new User();
+        updateData.setNama("Agus Updated");
+        
+        doNothing().when(userService).updateUser(2L, updateData);
+
+        // WHEN
+        ResponseEntity<?> response = userController.updateUser(2L, updateData);
+
+        // THEN
+        assertEquals(200, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("User berhasil diperbarui!", body.get("message"));
+        verify(userService, times(1)).updateUser(2L, updateData);
+    }
 }

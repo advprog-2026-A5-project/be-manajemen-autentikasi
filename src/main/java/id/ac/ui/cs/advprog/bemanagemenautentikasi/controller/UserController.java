@@ -59,4 +59,16 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok(Map.of("message", "User berhasil dihapus!"));
     }
+
+    // Update profil pengguna
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updateData) {
+        try {
+            userService.updateUser(id, updateData);
+            return ResponseEntity.ok(Map.of("message", "User berhasil diperbarui!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

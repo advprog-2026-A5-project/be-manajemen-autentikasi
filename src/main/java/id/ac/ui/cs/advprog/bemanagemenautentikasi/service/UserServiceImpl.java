@@ -52,4 +52,31 @@ public class UserServiceImpl implements UserService {
         User user = getUserById(id);
         userRepository.delete(user);
     }
+
+    @Override
+    public void updateUser(Long id, User updateData) {
+        User existingUser = getUserById(id);
+
+        if (updateData.getNama() != null && !updateData.getNama().isEmpty()) {
+            existingUser.setNama(updateData.getNama());
+        }
+
+        if (updateData.getEmail() != null && !updateData.getEmail().isEmpty() && !updateData.getEmail().equals(existingUser.getEmail())) {
+            if (userRepository.existsByEmail(updateData.getEmail())) {
+                throw new RuntimeException("Email sudah digunakan oleh pengguna lain!");
+            }
+            existingUser.setEmail(updateData.getEmail());
+        }
+
+        if (updateData.getRole() != null && !updateData.getRole().isEmpty()) {
+            existingUser.setRole(updateData.getRole());
+        }
+
+        // Jika mandor dan mengirimkan nomor sertifikasi
+        if (updateData.getNomorSertifikasiMandor() != null) {
+            existingUser.setNomorSertifikasiMandor(updateData.getNomorSertifikasiMandor());
+        }
+
+        userRepository.save(existingUser);
+    }
 }
