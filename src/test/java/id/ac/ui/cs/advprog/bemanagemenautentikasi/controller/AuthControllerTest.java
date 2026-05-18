@@ -133,4 +133,45 @@ public class AuthControllerTest {
         
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void testRegisterUser_UsernameAlreadyExists() {
+        // GIVEN: Username sudah terdaftar
+        when(userRepository.existsByUsername(validUser.getUsername())).thenReturn(true);
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(validUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Username is already in use!", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testRegisterUser_MandorMissingSertifikasi() {
+        // GIVEN: Mendaftar sebagai MANDOR tapi sertifikasi kosong
+        User mandorUser = new User();
+        mandorUser.setUsername("budi_mandor");
+        mandorUser.setEmail("budi_mandor@mysawit.com");
+        mandorUser.setNama("Budi Mandor");
+        mandorUser.setPassword("password123");
+        mandorUser.setRole("MANDOR");
+        mandorUser.setNomorSertifikasiMandor(""); // Kosong
+
+        when(userRepository.existsByUsername("budi_mandor")).thenReturn(false);
+        when(userRepository.existsByEmail("budi_mandor@mysawit.com")).thenReturn(false);
+
+        // WHEN
+        ResponseEntity<?> response = authController.registerUser(mandorUser);
+
+        // THEN
+        assertEquals(400, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Error: Nomor Sertifikasi Mandor wajib diisi!", body.get("message"));
+        verify(userRepository, never()).save(any(User.class));
+    }
 }
