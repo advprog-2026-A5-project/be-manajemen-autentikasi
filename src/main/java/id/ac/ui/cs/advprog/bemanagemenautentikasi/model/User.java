@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.mysawit.model;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.model;
 
 import jakarta.persistence.*;
 import lombok.*;

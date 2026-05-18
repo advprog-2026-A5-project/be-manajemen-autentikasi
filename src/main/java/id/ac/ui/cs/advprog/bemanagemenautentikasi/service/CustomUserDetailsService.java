@@ -1,7 +1,7 @@
-package id.ac.ui.cs.advprog.mysawit.service;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.service;
 
-import id.ac.ui.cs.advprog.mysawit.model.User;
-import id.ac.ui.cs.advprog.mysawit.repository.UserRepository;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;

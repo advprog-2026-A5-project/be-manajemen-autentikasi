@@ -1,8 +1,8 @@
-package id.ac.ui.cs.advprog.mysawit.controller;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.controller;
 
-import id.ac.ui.cs.advprog.mysawit.model.User;
-import id.ac.ui.cs.advprog.mysawit.repository.UserRepository;
-import id.ac.ui.cs.advprog.mysawit.security.JwtUtil;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.repository.UserRepository;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;

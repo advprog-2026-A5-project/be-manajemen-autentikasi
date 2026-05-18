@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.mysawit.controller;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.controller;
 
 import org.springframework.web.bind.annotation.*;
 @RestController

@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.mysawit;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

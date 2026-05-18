@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.mysawit.security;
+package id.ac.ui.cs.advprog.bemanagemenautentikasi.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
