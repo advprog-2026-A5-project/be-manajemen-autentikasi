@@ -146,4 +146,20 @@ public class UserControllerTest {
         assertEquals("User berhasil diperbarui!", body.get("message"));
         verify(userService, times(1)).updateUser(2L, updateData);
     }
+
+    @Test
+    void testUnassignBuruhFromMandor_Success() {
+        // GIVEN
+        doNothing().when(userService).unassignBuruhFromMandor(2L);
+
+        // WHEN: Endpoint dipanggil
+        ResponseEntity<?> response = userController.unassignBuruhFromMandor(2L);
+
+        // THEN
+        assertEquals(200, response.getStatusCode().value());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Assertions.assertNotNull(body);
+        assertEquals("Mandor berhasil dicopot dari Buruh!", body.get("message"));
+        verify(userService, times(1)).unassignBuruhFromMandor(2L);
+    }
 }
