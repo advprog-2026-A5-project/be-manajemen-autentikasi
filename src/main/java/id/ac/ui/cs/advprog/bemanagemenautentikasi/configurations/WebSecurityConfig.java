@@ -21,7 +21,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -65,7 +64,7 @@ public class WebSecurityConfig {
             )
             .authorizeHttpRequests(authorizeRequests ->
                     authorizeRequests
-                            .requestMatchers("/api/auth/**", "/api/test/all", "/h2-console/**").permitAll()
+                            .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/signout", "/api/test/all", "/h2-console/**").permitAll()
                             .anyRequest().authenticated()
             );
         // Add the JWT Token filter before the UsernamePasswordAuthenticationFilter

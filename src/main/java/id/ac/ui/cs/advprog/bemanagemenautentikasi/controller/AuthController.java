@@ -22,26 +22,12 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    PasswordEncoder encoder;
-    @Autowired
     JwtUtil jwtUtils;
+    @Autowired
+    PasswordEncoder encoder;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
-        // Menggunakan Email untuk Autentikasi
-        System.out.println("LOGIN EMAIL = " + user.getEmail());
-            System.out.println("LOGIN PASSWORD = " + user.getPassword());
-
-            userRepository.findByEmail(user.getEmail()).ifPresentOrElse(
-                    dbUser -> {
-                        System.out.println("DB USER FOUND = " + dbUser.getEmail());
-                        System.out.println("DB HASH = " + dbUser.getPassword());
-                        System.out.println("PASSWORD MATCHES = " + encoder.matches(user.getPassword(), dbUser.getPassword()));
-                        System.out.println("ROLE = " + dbUser.getRole());
-                    },
-                    () -> System.out.println("DB USER NOT FOUND")
-            );
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
