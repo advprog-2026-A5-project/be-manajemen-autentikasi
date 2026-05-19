@@ -31,6 +31,9 @@ class UserIntegrationReadControllerTest {
     @InjectMocks
     private UserController userController;
 
+    @InjectMocks
+    private InternalUserReadController internalUserReadController;
+
     private UserIdentityResponse buruhIdentity;
 
     @BeforeEach
@@ -56,7 +59,7 @@ class UserIntegrationReadControllerTest {
         BuruhSupervisorResponse supervisor = new BuruhSupervisorResponse(2L, "Budi", null, null, false);
         when(userService.getBuruhSupervisor(2L)).thenReturn(supervisor);
 
-        ResponseEntity<BuruhSupervisorResponse> response = userController.getBuruhSupervisor(2L);
+        ResponseEntity<BuruhSupervisorResponse> response = (ResponseEntity<BuruhSupervisorResponse>) internalUserReadController.getBuruhSupervisor(2L);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -68,7 +71,7 @@ class UserIntegrationReadControllerTest {
         MandorBuruhAssignmentResponse assignment = new MandorBuruhAssignmentResponse(3L, 2L, true);
         when(userService.getMandorBuruhAssignment(3L, 2L)).thenReturn(assignment);
 
-        ResponseEntity<MandorBuruhAssignmentResponse> response = userController.getMandorBuruhAssignment(3L, 2L);
+        ResponseEntity<MandorBuruhAssignmentResponse> response = (ResponseEntity<MandorBuruhAssignmentResponse>) internalUserReadController.getMandorBuruhAssignment(3L, 2L);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -83,7 +86,7 @@ class UserIntegrationReadControllerTest {
         );
         when(userService.getBuruhsByMandor(3L)).thenReturn(buruhs);
 
-        ResponseEntity<List<UserIdentityResponse>> response = userController.getBuruhsByMandor(3L);
+        ResponseEntity<List<UserIdentityResponse>> response = (ResponseEntity<List<UserIdentityResponse>>) internalUserReadController.getBuruhsByMandor(3L);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

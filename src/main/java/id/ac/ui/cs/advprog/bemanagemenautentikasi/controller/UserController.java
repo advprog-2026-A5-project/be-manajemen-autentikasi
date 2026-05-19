@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.bemanagemenautentikasi.controller;
 
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.dto.UserIdentityResponse;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserIdentityResponse> getCurrentUserIdentity(Authentication authentication) {
+        return ResponseEntity.ok(userService.getIdentityByEmail(authentication.getName()));
+    }
 
     // Mendapatkan daftar pengguna dengan filter opsional (nama, email, role)
     @GetMapping

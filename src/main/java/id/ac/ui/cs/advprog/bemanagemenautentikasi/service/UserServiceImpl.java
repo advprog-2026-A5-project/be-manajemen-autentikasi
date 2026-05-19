@@ -1,5 +1,8 @@
 package id.ac.ui.cs.advprog.bemanagemenautentikasi.service;
 
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.dto.BuruhSupervisorResponse;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.dto.MandorBuruhAssignmentResponse;
+import id.ac.ui.cs.advprog.bemanagemenautentikasi.dto.UserIdentityResponse;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.model.User;
 import id.ac.ui.cs.advprog.bemanagemenautentikasi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,5 +93,63 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(existingUser);
+    }
+
+    @Override
+    public UserIdentityResponse getIdentityByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan!"));
+        return toIdentity(user);
+    }
+
+    @Override
+    public UserIdentityResponse getIdentityById(Long id) {
+        return toIdentity(getUserById(id));
+    }
+
+    @Override
+    public BuruhSupervisorResponse getBuruhSupervisor(Long buruhId) {
+        User buruh = getUserById(buruhId);
+        ensureRole(buruh, "BURUH", "User yang dicari harus ber-role BURUH!");
+
+        User mandor = buruh.getMandor();
+        if (mandor == null) {
+            return new BuruhSupervisorResponse(buruh.getId(), buruh.getNama(), null, null, false);
+        }
+
+        return new BuruhSupervisorResponse(buruh.getId(), buruh.getNama(), mandor.getId(), mandor.getNama(), true);
+    }
+
+    @Override
+    public List<UserIdentityResponse> getBuruhsByMandor(Long mandorId) {
+        User mandor = getUserById(mandorId);
+        ensureRole(mandor, "MANDOR", "User yang dicari harus ber-role MANDOR!");
+
+        return userRepository.findByMandor_Id(mandorId).stream()
+                .filter(user -> "BURUH".equalsIgnoreCase(user.getRole()))
+                .map(this::toIdentity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public MandorBuruhAssignmentResponse getMandorBuruhAssignment(Long mandorId, Long buruhId) {
+        User buruh = getUserById(buruhId);
+        ensureRole(buruh, "BURUH", "User yang dicek harus ber-role BURUH!");
+
+        User mandor = getUserById(mandorId);
+        ensureRole(mandor, "MANDOR", "User mandor harus ber-role MANDOR!");
+
+        boolean assigned = buruh.getMandor() != null && buruh.getMandor().getId().equals(mandorId);
+        return new MandorBuruhAssignmentResponse(mandorId, buruhId, assigned);
+    }
+
+    private UserIdentityResponse toIdentity(User user) {
+        return new UserIdentityResponse(user.getId(), user.getEmail(), user.getNama(), user.getRole());
+    }
+
+    private void ensureRole(User user, String expectedRole, String message) {
+        if (!expectedRole.equalsIgnoreCase(user.getRole())) {
+            throw new IllegalArgumentException(message);
+        }
     }
 }

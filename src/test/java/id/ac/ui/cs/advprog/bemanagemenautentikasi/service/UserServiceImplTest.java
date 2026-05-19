@@ -247,6 +247,7 @@ public class UserServiceImplTest {
         otherMandor.setRole("MANDOR");
         buruh.setMandor(otherMandor);
         when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
 
         var result = userService.getMandorBuruhAssignment(2L, 1L);
 
@@ -263,6 +264,7 @@ public class UserServiceImplTest {
         buruh.setMandor(mandor);
         buruh2.setMandor(mandor);
 
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
         when(userRepository.findByMandor_Id(2L)).thenReturn(List.of(buruh, buruh2));
 
         var result = userService.getBuruhsByMandor(2L);
