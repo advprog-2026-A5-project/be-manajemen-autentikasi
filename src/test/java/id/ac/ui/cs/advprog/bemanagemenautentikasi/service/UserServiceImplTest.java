@@ -216,4 +216,60 @@ public class UserServiceImplTest {
         assertEquals("MANDOR-999", buruh.getNomorSertifikasiMandor());
         verify(userRepository, times(1)).save(buruh);
     }
+
+    @Test
+    void testGetIdentityByEmail_Success() {
+        when(userRepository.findByEmail("agus@mysawit.com")).thenReturn(Optional.of(buruh));
+
+        var result = userService.getIdentityByEmail("agus@mysawit.com");
+
+        assertEquals(1L, result.id());
+        assertEquals("agus@mysawit.com", result.email());
+        assertEquals("BURUH", result.role());
+    }
+
+    @Test
+    void testGetBuruhSupervisor_ReturnsAssignedMandor() {
+        buruh.setMandor(mandor);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+
+        var result = userService.getBuruhSupervisor(1L);
+
+        assertEquals(1L, result.buruhId());
+        assertEquals(2L, result.mandorId());
+        assertEquals(true, result.active());
+    }
+
+    @Test
+    void testGetMandorBuruhAssignment_FalseWhenDifferentMandor() {
+        User otherMandor = new User();
+        otherMandor.setId(9L);
+        otherMandor.setRole("MANDOR");
+        buruh.setMandor(otherMandor);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(buruh));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
+
+        var result = userService.getMandorBuruhAssignment(2L, 1L);
+
+        assertEquals(false, result.assigned());
+    }
+
+    @Test
+    void testGetBuruhsByMandor_ReturnsOnlyAssignedBuruh() {
+        User buruh2 = new User();
+        buruh2.setId(10L);
+        buruh2.setNama("Buruh 2");
+        buruh2.setEmail("buruh2@mysawit.com");
+        buruh2.setRole("BURUH");
+        buruh.setMandor(mandor);
+        buruh2.setMandor(mandor);
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(mandor));
+        when(userRepository.findByMandor_Id(2L)).thenReturn(List.of(buruh, buruh2));
+
+        var result = userService.getBuruhsByMandor(2L);
+
+        assertEquals(2, result.size());
+        assertEquals("BURUH", result.getFirst().role());
+    }
 }

@@ -22,13 +22,12 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    PasswordEncoder encoder;
-    @Autowired
     JwtUtil jwtUtils;
+    @Autowired
+    PasswordEncoder encoder;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
-        // Menggunakan Email untuk Autentikasi
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
