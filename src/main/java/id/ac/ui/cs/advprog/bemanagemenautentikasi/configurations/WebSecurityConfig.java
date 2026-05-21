@@ -64,7 +64,14 @@ public class WebSecurityConfig {
             )
             .authorizeHttpRequests(authorizeRequests ->
                     authorizeRequests
-                            .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/signout", "/api/test/all", "/h2-console/**").permitAll()
+                            .requestMatchers(
+                                    "/api/auth/signin",
+                                    "/api/auth/signup",
+                                    "/api/auth/signout",
+                                    "/api/test/all",
+                                    "/h2-console/**",
+                                    "/internal/**"
+                            ).permitAll()
                             .anyRequest().authenticated()
             );
         // Add the JWT Token filter before the UsernamePasswordAuthenticationFilter

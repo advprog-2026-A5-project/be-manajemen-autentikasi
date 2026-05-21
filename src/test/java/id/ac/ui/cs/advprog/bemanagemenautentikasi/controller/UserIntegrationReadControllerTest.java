@@ -18,9 +18,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class UserIntegrationReadControllerTest {
+
+    private static final String INTERNAL_TOKEN = "dev-internal-token";
 
     @Mock
     private UserService userService;
@@ -39,6 +42,7 @@ class UserIntegrationReadControllerTest {
     @BeforeEach
     void setUp() {
         buruhIdentity = new UserIdentityResponse(2L, "buruh@mysawit.com", "Budi", "BURUH");
+        ReflectionTestUtils.setField(internalUserReadController, "internalServiceToken", INTERNAL_TOKEN);
     }
 
     @Test
@@ -59,7 +63,7 @@ class UserIntegrationReadControllerTest {
         BuruhSupervisorResponse supervisor = new BuruhSupervisorResponse(2L, "Budi", null, null, false);
         when(userService.getBuruhSupervisor(2L)).thenReturn(supervisor);
 
-        ResponseEntity<BuruhSupervisorResponse> response = (ResponseEntity<BuruhSupervisorResponse>) internalUserReadController.getBuruhSupervisor(2L);
+        ResponseEntity<BuruhSupervisorResponse> response = (ResponseEntity<BuruhSupervisorResponse>) internalUserReadController.getBuruhSupervisor(2L, INTERNAL_TOKEN);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -71,7 +75,7 @@ class UserIntegrationReadControllerTest {
         MandorBuruhAssignmentResponse assignment = new MandorBuruhAssignmentResponse(3L, 2L, true);
         when(userService.getMandorBuruhAssignment(3L, 2L)).thenReturn(assignment);
 
-        ResponseEntity<MandorBuruhAssignmentResponse> response = (ResponseEntity<MandorBuruhAssignmentResponse>) internalUserReadController.getMandorBuruhAssignment(3L, 2L);
+        ResponseEntity<MandorBuruhAssignmentResponse> response = (ResponseEntity<MandorBuruhAssignmentResponse>) internalUserReadController.getMandorBuruhAssignment(3L, 2L, INTERNAL_TOKEN);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -86,7 +90,7 @@ class UserIntegrationReadControllerTest {
         );
         when(userService.getBuruhsByMandor(3L)).thenReturn(buruhs);
 
-        ResponseEntity<List<UserIdentityResponse>> response = (ResponseEntity<List<UserIdentityResponse>>) internalUserReadController.getBuruhsByMandor(3L);
+        ResponseEntity<List<UserIdentityResponse>> response = (ResponseEntity<List<UserIdentityResponse>>) internalUserReadController.getBuruhsByMandor(3L, INTERNAL_TOKEN);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
