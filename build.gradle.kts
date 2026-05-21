@@ -57,6 +57,7 @@ tasks.withType<Test> {
 }
 
 tasks.withType<SpotBugsTask> {
+    excludeFilter.set(file("config/spotbugs/exclude.xml"))
     reports {
         create("sarif") {
             required.set(true)

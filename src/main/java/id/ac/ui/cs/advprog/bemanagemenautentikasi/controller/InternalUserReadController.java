@@ -15,6 +15,7 @@ import java.util.Map;
 @RequestMapping("/internal")
 public class InternalUserReadController {
 
+    @SuppressWarnings("EI_EXPOSE_REP2")
     private final UserService userService;
 
     public InternalUserReadController(UserService userService) {
