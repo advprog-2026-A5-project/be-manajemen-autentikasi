@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,6 +39,26 @@ public class InternalUserReadController {
         }
 
         return ResponseEntity.ok(userService.getIdentityById(id));
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserIdentityResponse>> getInternalUsers(
+            @RequestHeader(name = "X-Internal-Service-Token", required = false) String token,
+            @RequestParam(required = false) String nama,
+            @RequestParam(required = false) String role
+    ) {
+        if (!isValidInternalToken(token)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        List<UserIdentityResponse> users = userService.getFilteredUsers(nama, null, role).stream()
+                .map(user -> new UserIdentityResponse(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getNama(),
+                        user.getRole()))
+                .toList();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/buruh/{buruhId}/supervisor")
