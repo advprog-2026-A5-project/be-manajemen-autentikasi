@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class AdminSeeder implements CommandLineRunner {
@@ -20,20 +21,25 @@ public class AdminSeeder implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${app.env}")
+    private String environment;
+
     @Override
     public void run(String... args) {
-        if (!userRepository.existsByEmail("admin@mysawit.com")) {
-            User admin = new User();
-            admin.setNama("Admin Utama");
-            admin.setUsername("admin");
-            admin.setEmail("admin@mysawit.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setRole("ADMIN");
+        if (environment.equals("LOCAL")) {
+            if (!userRepository.existsByEmail("admin@mysawit.com")) {
+                User admin = new User();
+                admin.setNama("Admin Utama");
+                admin.setUsername("admin");
+                admin.setEmail("admin@mysawit.com");
+                admin.setPassword(passwordEncoder.encode("admin123"));
+                admin.setRole("ADMIN");
 
-            userRepository.save(admin);
-            log.info("Default admin seeded: email=admin@mysawit.com username=admin role=ADMIN");
-        } else {
-            log.info("Default admin already exists: email=admin@mysawit.com");
+                userRepository.save(admin);
+                log.info("Default admin seeded: email=admin@mysawit.com username=admin role=ADMIN");
+            } else {
+                log.info("Default admin already exists: email=admin@mysawit.com");
+            }
         }
     }
 }
