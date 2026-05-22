@@ -67,6 +67,7 @@ public class WebSecurityConfig {
                             .requestMatchers(
                                     "/api/auth/signin",
                                     "/api/auth/signup",
+                                    "/api/auth/google",
                                     "/api/auth/signout",
                                     "/api/test/all",
                                     "/h2-console/**",
