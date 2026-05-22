@@ -21,6 +21,8 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -29,6 +31,9 @@ public class WebSecurityConfig {
     CustomUserDetailsService userDetailsService;
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
+    @Value("${app.cors-allowed-origins}")
+    private List<String> allowedOrigins;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -54,7 +59,7 @@ public class WebSecurityConfig {
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .cors((cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:3000"));
+                    corsConfiguration.setAllowedOrigins(allowedOrigins);
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
                     return corsConfiguration;
@@ -64,8 +69,8 @@ public class WebSecurityConfig {
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(
-                                // "/api/auth/signin",
-                                // "/api/auth/signup",
+                                "/api/auth/signin",
+                                "/api/auth/signup",
                                 "/api/auth/signout",
                                 "/api/test/all",
                                 "/h2-console/**",
