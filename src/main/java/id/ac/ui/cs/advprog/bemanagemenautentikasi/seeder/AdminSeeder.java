@@ -21,12 +21,12 @@ public class AdminSeeder implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${app.env}")
-    private String environment;
+    @Value("${app.env:LOCAL}")
+    private String environment = "LOCAL";
 
     @Override
     public void run(String... args) {
-        if (environment.equals("LOCAL")) {
+        if ("LOCAL".equals(environment)) {
             if (!userRepository.existsByEmail("admin@mysawit.com")) {
                 User admin = new User();
                 admin.setNama("Admin Utama");

@@ -32,7 +32,7 @@ public class WebSecurityConfig {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
-    @Value("${app.cors-allowed-origins}")
+    @Value("${app.cors-allowed-origins:http://localhost:3000,http://127.0.0.1:3000}")
     private List<String> allowedOrigins;
 
     @Bean
@@ -69,14 +69,16 @@ public class WebSecurityConfig {
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(
-                                "/api/auth/signin",
-                                "/api/auth/signup",
-                                "/api/auth/signout",
-                                "/api/test/all",
-                                "/h2-console/**",
-                                "/internal/**")
-                        .permitAll()
-                        .anyRequest().authenticated());
+                                    "/api/auth/signin",
+                                    "/api/auth/signup",
+                                    "/api/auth/google",
+                                    "/api/auth/signout",
+                                    "/api/test/all",
+                                    "/h2-console/**",
+                                    "/internal/**"
+                            ).permitAll()
+                            .anyRequest().authenticated()
+            );
         // Add the JWT Token filter before the UsernamePasswordAuthenticationFilter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
